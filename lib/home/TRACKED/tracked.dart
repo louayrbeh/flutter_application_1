@@ -6,7 +6,10 @@ class Tracked extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tracked"),
+        title: Text(
+          "Tracked",
+          style: TextStyle(fontFamily: "Poppins"),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,

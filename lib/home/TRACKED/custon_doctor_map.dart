@@ -26,7 +26,6 @@ Future<Object?> customAddDoctor(
     pageBuilder: (context, _, __) => Center(
       child: Container(
         height: MediaQuery.of(context).size.height * 0.80,
-        //margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.94),
@@ -44,7 +43,10 @@ Future<Object?> customAddDoctor(
                     style: TextStyle(fontSize: 34, fontFamily: "Poppins"),
                   ),
                   DoctorMap(),
-                  Text("Clic on the map to add doctor location"),
+                  Text(
+                    "Clic on the map to add doctor(s) location(s)",
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ],
               ),
               ElevatedButton(

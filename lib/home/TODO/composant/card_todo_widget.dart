@@ -27,7 +27,7 @@ class CardTodoListWidget extends ConsumerWidget {
               categoryColor = Color(0xFF80A4FF);
               break;
             case 'Other':
-              categoryColor = Color.fromARGB(255, 225, 128, 255);
+              categoryColor = Color(0xFFF77D8E);
               break;
           }
 

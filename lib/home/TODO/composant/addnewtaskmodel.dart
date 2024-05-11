@@ -132,7 +132,7 @@ class AddNewTaskModel extends ConsumerWidget {
                 ),
                 Expanded(
                   child: RadioWidget(
-                    categColor: Color.fromARGB(255, 225, 128, 255),
+                    categColor: Color(0xFFF77D8E),
                     titleRadio: 'Other',
                     valueInput: 3,
                     onChangeValue: () =>

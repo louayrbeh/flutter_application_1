@@ -30,10 +30,8 @@ class _EntryPointState extends State<EntryPoint>
   late AnimationController _animationController;
   late Animation<double> animation;
   late Animation<double> scalAnimation;
-
-  late SMIBool isSideBarClosed;
-
   bool isSideMenuClosed = true;
+  late SMIBool isSideBarClosed;
 
   @override
   void initState() {

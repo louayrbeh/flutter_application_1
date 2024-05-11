@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, prefer_const_literals_to_create_immutables, camel_case_types, avoid_print
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,8 +15,26 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return Stack(children: [
+      Positioned(
+        width: MediaQuery.of(context).size.width * 1.7,
+        bottom: 200,
+        left: 100,
+        child: Image.asset("assets/Backgrounds/Spline.png"),
+      ),
+      Positioned.fill(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 10),
+        ),
+      ),
+      const RiveAnimation.asset("assets/RiveAssets/shapes.riv"),
+      Positioned.fill(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+          child: const SizedBox(),
+        ),
+      ),
+      SafeArea(
         bottom: false,
         child: SingleChildScrollView(
           child: Column(
@@ -25,7 +46,7 @@ class _HomeState extends State<Home> {
                 child: Text(
                   "Basic functionalities",
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                      color: Colors.black, fontWeight: FontWeight.w600),
+                      color: Colors.white, fontWeight: FontWeight.w600),
                 ),
               ),
               SingleChildScrollView(
@@ -37,8 +58,8 @@ class _HomeState extends State<Home> {
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 24),
-                        height: 280,
-                        width: 260,
+                        height: 260,
+                        width: 240,
                         decoration: BoxDecoration(
                           color: Color(0xFF7553F6),
                           borderRadius:
@@ -71,19 +92,19 @@ class _HomeState extends State<Home> {
                                   ),
                                   const Spacer(),
                                   /* Row(
-                                    children: List.generate(
-                                      3,
-                                      (index) => Transform.translate(
-                                        offset:
-                                            Offset((-10 * index).toDouble(), 0),
-                                        child: CircleAvatar(
-                                          radius: 20,
-                                          backgroundImage: AssetImage(
-                                              "assets/avaters/Avatar ${index + 1}.jpg"),
+                                      children: List.generate(
+                                        3,
+                                        (index) => Transform.translate(
+                                          offset:
+                                              Offset((-10 * index).toDouble(), 0),
+                                          child: CircleAvatar(
+                                            radius: 20,
+                                            backgroundImage: AssetImage(
+                                                "assets/avaters/Avatar ${index + 1}.jpg"),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  )*/
+                                    )*/
                                 ],
                               ),
                             ),
@@ -96,8 +117,8 @@ class _HomeState extends State<Home> {
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 24),
-                        height: 280,
-                        width: 260,
+                        height: 260,
+                        width: 240,
                         decoration: BoxDecoration(
                           color: Color(0xFF80A4FF),
                           borderRadius:
@@ -146,10 +167,8 @@ class _HomeState extends State<Home> {
                 padding: const EdgeInsets.all(20),
                 child: Text(
                   "Other",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall!
-                      .copyWith(fontWeight: FontWeight.w600),
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Colors.white, fontWeight: FontWeight.w600),
                 ),
               ),
               SingleChildScrollView(
@@ -162,7 +181,7 @@ class _HomeState extends State<Home> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 20),
                         decoration: BoxDecoration(
-                          color: Color(0xFF7553F6),
+                          color: Color(0xFFF77D8E),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(20)),
                         ),
@@ -209,7 +228,7 @@ class _HomeState extends State<Home> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 20),
                         decoration: BoxDecoration(
-                          color: Color(0xFF80A4FF),
+                          color: Color(0xFF7553F6),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(20)),
                         ),
@@ -253,7 +272,7 @@ class _HomeState extends State<Home> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 20),
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 225, 128, 255),
+                          color: Color(0xFF80A4FF),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(20)),
                         ),
@@ -298,6 +317,6 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-    );
+    ]);
   }
 }

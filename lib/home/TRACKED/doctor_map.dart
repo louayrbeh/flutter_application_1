@@ -58,7 +58,7 @@ class _DoctorMapState extends State<DoctorMap> with WidgetsBindingObserver {
           borderRadius: BorderRadius.circular(16),
         ),
         child: GoogleMap(
-          mapType: MapType.normal,
+          mapType: MapType.satellite,
           myLocationEnabled: true,
           initialCameraPosition: CameraPosition(
             target: LatLng(35.77550605971146, 10.826162172109083),

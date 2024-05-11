@@ -24,7 +24,10 @@ class Todo extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
-        title: Text("TODO"),
+        title: Text(
+          "TODO",
+          style: TextStyle(fontFamily: "Poppins"),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,

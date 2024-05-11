@@ -28,7 +28,6 @@ Future<Object?> customAddCircle(
       child: Center(
         child: Container(
           height: MediaQuery.of(context).size.height * 0.80,
-          //margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.94),
@@ -42,11 +41,10 @@ Future<Object?> customAddCircle(
                 Column(
                   children: [
                     const Text(
-                      "Circles Zones",
+                      " Circles Zones",
                       style: TextStyle(fontSize: 34, fontFamily: "Poppins"),
                     ),
                     AddCircles(),
-                    Text("Clic on the map to add doctor location"),
                   ],
                 ),
                 ElevatedButton(

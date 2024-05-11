@@ -23,7 +23,9 @@ class SideMenuTile extends StatelessWidget {
     return Column(
       children: [
         const Padding(
-          padding: EdgeInsets.only(left: 24),
+          padding: EdgeInsets.only(
+            left: 24,
+          ),
           child: Divider(
             color: Colors.white24,
             height: 1,
@@ -31,7 +33,6 @@ class SideMenuTile extends StatelessWidget {
         ),
         Stack(
           children: [
-            // This is what we wanted
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
               curve: Curves.fastOutSlowIn,
@@ -41,7 +42,7 @@ class SideMenuTile extends StatelessWidget {
               left: 0,
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Color(0xFF6792FF),
+                  color: Color(0xFF80A4FF),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
               ),

@@ -95,34 +95,70 @@ class _AddCirclesState extends State<AddCircles> {
                 },
               ),
             ),
+            SizedBox(
+              height: 8,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                "Clic on the map to add circle(s) zone(s). You can also change the raduis of cercle(s)",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            SizedBox(
+              height: 8,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Entrez le rayon (mètres)",
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.60,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  height: 40,
+                  child: Center(
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: "Enter raduis (metre) ",
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          circleRadius = double.tryParse(value) ?? 500.0;
+                        });
+                      },
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        circleRadius = double.tryParse(value) ?? 500.0;
-                      });
-                    },
                   ),
                 ),
                 SizedBox(width: 8.0),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      circles.forEach((circle) {
-                        circles[circles.indexOf(circle)] =
-                            circle.copyWith(radiusParam: circleRadius);
-                      });
-                      updateAllCircleRadiusInFirestore(circleRadius);
-                    });
-                  },
-                  child: Text("Appliquer"),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: 40,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        backgroundColor: Colors.white,
+                        foregroundColor: Color(0xFF80A4FF),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          circles.forEach((circle) {
+                            circles[circles.indexOf(circle)] =
+                                circle.copyWith(radiusParam: circleRadius);
+                          });
+                          updateAllCircleRadiusInFirestore(circleRadius);
+                        });
+                      },
+                      child: Text(
+                        "Apply",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700),
+                      )),
                 ),
               ],
             ),

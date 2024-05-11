@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -11,8 +10,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:flutter_application_1/home/TRACKED/custom_cercle_add.dart';
 import 'package:flutter_application_1/home/TRACKED/custon_doctor_map.dart';
-
-import 'package:rive/rive.dart';
 
 class PremierMaps extends StatefulWidget {
   const PremierMaps({Key? key}) : super(key: key);
@@ -62,68 +59,15 @@ class _PremierMapsState extends State<PremierMaps> {
   FirebaseFirestore firestoreMarkers = FirebaseFirestore.instance;
 
   // Méthode pour récupérer les cercles depuis Firestore
-  Future<void> _listenToCirclesChanges() async {
-    firestoreCircles.collection('circles').snapshots().listen((snapshot) {
-      List<Circle> updatedCircles = [];
-      snapshot.docs.forEach((doc) {
-        if (doc.exists) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-          LatLng center = LatLng(
-            data['center']['latitude'] as double,
-            data['center']['longitude'] as double,
-          );
-          double radius = data['radius'] as double;
-          Circle circle = Circle(
-            circleId: CircleId(doc.id),
-            center: center,
-            radius: radius,
-            strokeWidth: 2,
-            strokeColor: Colors.blue,
-            fillColor: Colors.blue.withOpacity(0.2),
-          );
-          updatedCircles.add(circle);
-        }
-      });
-
-      setState(() {
-        circles = updatedCircles;
-      });
-    });
-  }
-
-  Future<void> _listenToMarkerChanges() async {
-    firestoreMarkers.collection('DoctorMarkers').snapshots().listen((snapshot) {
-      List<Marker> updatedMarkers = [];
-      snapshot.docs.forEach((doc) {
-        if (doc.exists) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-          LatLng position = LatLng(
-            data['latitude'] as double,
-            data['longitude'] as double,
-          );
-          Marker marker = Marker(
-            markerId: MarkerId(doc.id),
-            position: position,
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueAzure),
-          );
-          updatedMarkers.add(marker);
-        }
-      });
-
-      setState(() {
-        markers = updatedMarkers;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 4,
             child: Stack(
               children: [
                 Container(
@@ -152,7 +96,7 @@ class _PremierMapsState extends State<PremierMaps> {
                       }
                     },
                     icon: Icon(
-                      Icons.directions,
+                      Icons.assistant_direction_outlined,
                       size: 45,
                     ), // Icône que vous souhaitez afficher
                   ),
@@ -170,8 +114,8 @@ class _PremierMapsState extends State<PremierMaps> {
                     },
                     icon: Icon(
                       _currentMapType == MapType.normal
-                          ? Icons.map
-                          : Icons.satellite,
+                          ? Icons.map_outlined
+                          : Icons.satellite_outlined,
                       size: 45,
                     ), // Icône pour changer le type de carte
                   ),
@@ -182,68 +126,88 @@ class _PremierMapsState extends State<PremierMaps> {
           SizedBox(
             height: 8,
           ),
-          Text(
-              "You can add a circle(s) zone(s) in the map and we will send a notification when the braclet's user got away from the zone(s)"),
-          SizedBox(
-            width: 350,
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              "You can add a circle(s) zone(s) in the map and we will send a notification when the braclet's user got away from the zone(s)",
+              textAlign: TextAlign.start,
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+          Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.80,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    backgroundColor: Colors.white,
+                    foregroundColor: Color(0xFF80A4FF),
                   ),
-                  backgroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  customAddCircle(
-                    context,
-                    onCLosed: (_) {
-                      setState(() {
-                        isAddCircleZoneDialogShown = false;
-                      });
-                    },
-                  );
-                },
-                child: Text(
-                  "Add Circle(s) Zone(s)",
-                  style: TextStyle(
+                  onPressed: () {
+                    customAddCircle(
+                      context,
+                      onCLosed: (_) {
+                        setState(() {
+                          isAddCircleZoneDialogShown = false;
+                        });
+                      },
+                    );
+                  },
+                  child: Text(
+                    "Add Circle(s) Zone(s)",
+                    style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
-                      fontWeight: FontWeight.w700),
-                )),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )),
+            ),
           ),
           SizedBox(
             height: 8,
           ),
-          Text("You can add a marker(s) for doctor(s) location(s)"),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              "You can add a marker(s) for doctor(s) location(s)",
+              textAlign: TextAlign.start,
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
           SizedBox(
             height: 8,
           ),
-          SizedBox(
-            width: 350,
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+          Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.80,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    backgroundColor: Colors.white,
+                    foregroundColor: Color(0xFF80A4FF),
                   ),
-                  backgroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  customAddDoctor(
-                    context,
-                    onCLosed: (_) {
-                      setState(() {
-                        isAddDoctorDialogShown = false;
-                      });
-                    },
-                  );
-                },
-                child: Text(
-                  "Add Doctor(s)",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700),
-                )),
+                  onPressed: () {
+                    customAddDoctor(
+                      context,
+                      onCLosed: (_) {
+                        setState(() {
+                          isAddDoctorDialogShown = false;
+                        });
+                      },
+                    );
+                  },
+                  child: Text(
+                    "Add Doctor(s)",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700),
+                  )),
+            ),
           ),
           SizedBox(
             height: 8,
@@ -324,6 +288,61 @@ class _PremierMapsState extends State<PremierMaps> {
     );
     setState(() {
       polylines[id] = polyline;
+    });
+  }
+
+  Future<void> _listenToCirclesChanges() async {
+    firestoreCircles.collection('circles').snapshots().listen((snapshot) {
+      List<Circle> updatedCircles = [];
+      snapshot.docs.forEach((doc) {
+        if (doc.exists) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          LatLng center = LatLng(
+            data['center']['latitude'] as double,
+            data['center']['longitude'] as double,
+          );
+          double radius = data['radius'] as double;
+          Circle circle = Circle(
+            circleId: CircleId(doc.id),
+            center: center,
+            radius: radius,
+            strokeWidth: 2,
+            strokeColor: Colors.blue,
+            fillColor: Colors.blue.withOpacity(0.2),
+          );
+          updatedCircles.add(circle);
+        }
+      });
+
+      setState(() {
+        circles = updatedCircles;
+      });
+    });
+  }
+
+  Future<void> _listenToMarkerChanges() async {
+    firestoreMarkers.collection('DoctorMarkers').snapshots().listen((snapshot) {
+      List<Marker> updatedMarkers = [];
+      snapshot.docs.forEach((doc) {
+        if (doc.exists) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          LatLng position = LatLng(
+            data['latitude'] as double,
+            data['longitude'] as double,
+          );
+          Marker marker = Marker(
+            markerId: MarkerId(doc.id),
+            position: position,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure),
+          );
+          updatedMarkers.add(marker);
+        }
+      });
+
+      setState(() {
+        markers = updatedMarkers;
+      });
     });
   }
 }
