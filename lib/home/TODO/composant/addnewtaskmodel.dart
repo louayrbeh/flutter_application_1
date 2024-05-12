@@ -36,10 +36,10 @@ class AddNewTaskModel extends ConsumerWidget {
       },
       child: Container(
         padding: EdgeInsets.all(30),
-        height: MediaQuery.of(context).size.height * 0.75,
+        height: MediaQuery.of(context).size.height * 0.7,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -91,6 +91,9 @@ class AddNewTaskModel extends ConsumerWidget {
                   color: Colors.black,
                 ),
               ),
+            ),
+            SizedBox(
+              height: 6,
             ),
             Textfieldform(
               maxLine: 3,
@@ -192,7 +195,7 @@ class AddNewTaskModel extends ConsumerWidget {
                       foregroundColor: Colors.blue.shade800,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       side: BorderSide(color: Colors.blue.shade800),
                       padding: EdgeInsetsDirectional.symmetric(
@@ -211,7 +214,7 @@ class AddNewTaskModel extends ConsumerWidget {
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       padding: EdgeInsetsDirectional.symmetric(
                         vertical: 14,

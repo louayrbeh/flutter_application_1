@@ -65,27 +65,38 @@ class Todo extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD5E8FA),
-                      foregroundColor: Colors.blue.shade800,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          backgroundColor: Colors.white,
+                          foregroundColor: Color(0xFF80A4FF),
+                        ),
+                        onPressed: () {
+                          showModalBottomSheet(
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            context: context,
+                            builder: (context) =>
+                                AddNewTaskModel(taskData: taskData),
+                          );
+                        },
+                        child: Text(
+                          "+ New Task",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        isScrollControlled: true,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        context: context,
-                        builder: (context) =>
-                            AddNewTaskModel(taskData: taskData),
-                      );
-                    },
-                    child: const Text('+ New Task'),
                   ),
                 ],
               ),

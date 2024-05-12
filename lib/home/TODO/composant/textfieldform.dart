@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class Textfieldform extends StatelessWidget {
   const Textfieldform({
-    Key? key, // Ajoutez Key? key ici
+    Key? key,
     required this.maxLine,
     required this.hintText,
     required this.txtController,
@@ -17,9 +17,9 @@ class Textfieldform extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
+        color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(8),
       ),
       child: TextField(
@@ -27,7 +27,7 @@ class Textfieldform extends StatelessWidget {
         decoration: InputDecoration(
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
-            fillColor: Colors.grey.shade200,
+            fillColor: Colors.grey.shade100,
             hintText: hintText),
         maxLines: maxLine,
       ),

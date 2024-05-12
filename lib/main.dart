@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
           'home': (context) => const Home(),
           'tracked': (context) => Tracked(),
           'todo': (context) => Todo(),
-          'contact': (context) => const Contact(),
+          'contact': (context) => Contact(),
           'community': (context) => const Community(),
           'help': (context) => const Help(),
           'todo': (context) => Todo(),

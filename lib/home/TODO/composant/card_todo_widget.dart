@@ -37,7 +37,7 @@ class CardTodoListWidget extends ConsumerWidget {
             height: 120,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               children: [
@@ -45,8 +45,8 @@ class CardTodoListWidget extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: categoryColor,
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      bottomLeft: Radius.circular(12),
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
                     ),
                   ),
                   width: 20,
