@@ -70,17 +70,18 @@ class _AddCirclesState extends State<AddCircles> {
                 circles: Set<Circle>.of(circles),
                 onTap: (LatLng latLng) {
                   setState(() {
-                    bool isCircleExists = false;
+                    Circle? circleToRemove;
                     for (Circle circle in circles) {
                       if (calculateDistance(circle.center, latLng) <=
                           circle.radius) {
-                        isCircleExists = true;
-                        circles.remove(circle);
-                        removeCircleFromFirestore(circle.circleId.toString());
+                        circleToRemove = circle;
                         break;
                       }
                     }
-                    if (!isCircleExists) {
+                    if (circleToRemove != null) {
+                      circles.remove(circleToRemove!);
+                      removeCircleFromFirestore(circleToRemove.circleId.value);
+                    } else {
                       Circle newCircle = Circle(
                         circleId: CircleId(latLng.toString()),
                         center: latLng,
@@ -174,14 +175,14 @@ class _AddCirclesState extends State<AddCircles> {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        // Reference to the user's document in Firestore
+        // Référence au document de l'utilisateur dans Firestore
         DocumentReference userDocRef =
             FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-        // Reference to the circles subcollection within the user's document
+        // Référence à la sous-collection de cercles dans le document de l'utilisateur
         CollectionReference circlesRef = userDocRef.collection('circles');
 
-        // Add the circle to the circles subcollection
+        // Ajouter le cercle à la sous-collection de cercles
         await circlesRef.add({
           'circleId': circle.circleId.toString(),
           'center': {
@@ -191,31 +192,36 @@ class _AddCirclesState extends State<AddCircles> {
           'radius': circle.radius,
         });
 
-        print('Circle added to Firestore successfully');
+        print('Cercle ajouté à Firestore avec succès');
       } else {
-        print('User not logged in');
+        print('Utilisateur non connecté');
       }
     } catch (e) {
-      print('Error adding circle to Firestore: $e');
+      print('Erreur lors de l\'ajout du cercle à Firestore: $e');
     }
   }
 
   // Fonction pour supprimer un cercle de Firestore
   Future<void> removeCircleFromFirestore(String circleId) async {
     try {
-      CollectionReference circlesCollection =
-          FirebaseFirestore.instance.collection('circles');
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Référence au document de l'utilisateur dans Firestore
+        DocumentReference userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-      // L'ID du cercle est stocké sous la forme d'une String au format 'circleId(foo)'.
-      // Nous devons extraire seulement 'foo' pour obtenir l'ID du document Firestore.
-      String documentId =
-          circleId.substring(circleId.indexOf('(') + 1, circleId.indexOf(')'));
+        // Référence à la sous-collection de cercles dans le document de l'utilisateur
+        CollectionReference circlesRef = userDocRef.collection('circles');
 
-      await circlesCollection.doc(documentId).delete();
+        // Supprimer le cercle de la sous-collection de cercles
+        await circlesRef.doc(circleId).delete();
 
-      print('Circle removed from Firestore successfully');
+        print('Cercle supprimé de Firestore avec succès');
+      } else {
+        print('Utilisateur non connecté');
+      }
     } catch (e) {
-      print('Error removing circle from Firestore: $e');
+      print('Erreur lors de la suppression du cercle de Firestore: $e');
     }
   }
 
@@ -224,26 +230,28 @@ class _AddCirclesState extends State<AddCircles> {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        // Reference to the user's document in Firestore
+        // Référence au document de l'utilisateur dans Firestore
         DocumentReference userDocRef =
             FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-        // Reference to the circles subcollection within the user's document
+        // Référence à la sous-collection de cercles dans le document de l'utilisateur
         CollectionReference circlesRef = userDocRef.collection('circles');
 
-        // Update the radius of all circles in the circles subcollection
+        // Mettre à jour le rayon de tous les cercles dans la sous-collection de cercles
         QuerySnapshot querySnapshot = await circlesRef.get();
 
         querySnapshot.docs.forEach((doc) async {
           await doc.reference.update({'radius': newRadius});
         });
 
-        print('Radius of all circles updated in Firestore successfully');
+        print(
+            'Rayon de tous les cercles mis à jour dans Firestore avec succès');
       } else {
-        print('User not logged in');
+        print('Utilisateur non connecté');
       }
     } catch (e) {
-      print('Error updating circle radius in Firestore: $e');
+      print(
+          'Erreur lors de la mise à jour du rayon du cercle dans Firestore: $e');
     }
   }
 
@@ -252,11 +260,11 @@ class _AddCirclesState extends State<AddCircles> {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        // Reference to the user's document in Firestore
+        // Référence au document de l'utilisateur dans Firestore
         DocumentReference userDocRef =
             FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-        // Reference to the circles subcollection within the user's document
+        // Référence à la sous-collection de cercles dans le document de l'utilisateur
         CollectionReference circlesRef = userDocRef.collection('circles');
 
         QuerySnapshot querySnapshot = await circlesRef.get();
@@ -281,11 +289,11 @@ class _AddCirclesState extends State<AddCircles> {
 
         return circles;
       } else {
-        print('User not logged in');
+        print('Utilisateur non connecté');
         return [];
       }
     } catch (e) {
-      print('Error getting circles from Firestore: $e');
+      print('Erreur lors de la récupération des cercles depuis Firestore: $e');
       return [];
     }
   }

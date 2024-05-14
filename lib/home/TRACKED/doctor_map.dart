@@ -17,14 +17,14 @@ class DoctorMap extends StatefulWidget {
 class _DoctorMapState extends State<DoctorMap> with WidgetsBindingObserver {
   List<Marker> markers = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final User? _user = FirebaseAuth.instance.currentUser;
+  late String _userUid;
 
   @override
   void initState() {
     super.initState();
+    _userUid = FirebaseAuth.instance.currentUser!.uid;
     // Appeler la fonction pour récupérer les marqueurs depuis Firestore lors de l'initialisation
     getMarkersFromFirestore();
-
     // Observer pour détecter les changements d'état de l'application
     WidgetsBinding.instance!.addObserver(this);
   }
@@ -60,7 +60,7 @@ class _DoctorMapState extends State<DoctorMap> with WidgetsBindingObserver {
           borderRadius: BorderRadius.circular(16),
         ),
         child: GoogleMap(
-          mapType: MapType.satellite,
+          mapType: MapType.normal,
           myLocationEnabled: true,
           initialCameraPosition: CameraPosition(
             target: LatLng(35.77550605971146, 10.826162172109083),
@@ -90,27 +90,28 @@ class _DoctorMapState extends State<DoctorMap> with WidgetsBindingObserver {
   // Fonction pour récupérer les marqueurs depuis Firestore
   void getMarkersFromFirestore() async {
     try {
-      if (_user != null) {
-        QuerySnapshot querySnapshot =
-            await _firestore.collection('DoctorMarkers_${_user.uid}').get();
-        List<Marker> newMarkers = [];
-        querySnapshot.docs.forEach((doc) {
-          double latitude = doc['latitude'];
-          double longitude = doc['longitude'];
-          newMarkers.add(Marker(
-            markerId: MarkerId(doc.id),
-            position: LatLng(latitude, longitude),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueAzure),
-            onTap: () {
-              removeMarker(LatLng(latitude, longitude));
-            },
-          ));
-        });
-        setState(() {
-          markers = newMarkers;
-        });
-      }
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc(_userUid)
+          .collection('DoctorMarkers')
+          .get();
+      List<Marker> newMarkers = [];
+      querySnapshot.docs.forEach((doc) {
+        double latitude = doc['latitude'];
+        double longitude = doc['longitude'];
+        newMarkers.add(Marker(
+          markerId: MarkerId(doc.id),
+          position: LatLng(latitude, longitude),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          onTap: () {
+            removeMarker(LatLng(latitude, longitude));
+          },
+        ));
+      });
+      setState(() {
+        markers = newMarkers;
+      });
     } catch (e) {
       print('Error getting markers from Firestore: $e');
     }
@@ -125,16 +126,16 @@ class _DoctorMapState extends State<DoctorMap> with WidgetsBindingObserver {
 
     // Supprimer le document correspondant dans Firestore
     try {
-      if (_user != null) {
-        QuerySnapshot querySnapshot = await _firestore
-            .collection('DoctorMarkers_${_user.uid}')
-            .where('latitude', isEqualTo: position.latitude)
-            .where('longitude', isEqualTo: position.longitude)
-            .get();
-        querySnapshot.docs.forEach((doc) {
-          doc.reference.delete();
-        });
-      }
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc(_userUid)
+          .collection('DoctorMarkers')
+          .where('latitude', isEqualTo: position.latitude)
+          .where('longitude', isEqualTo: position.longitude)
+          .get();
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.delete();
+      });
     } catch (e) {
       print('Error removing marker from Firestore: $e');
     }
@@ -143,12 +144,14 @@ class _DoctorMapState extends State<DoctorMap> with WidgetsBindingObserver {
   // Fonction pour ajouter un marqueur à Firestore
   Future<void> addMarkerToFirestore(LatLng position) async {
     try {
-      if (_user != null) {
-        await _firestore.collection('DoctorMarkers_${_user.uid}').add({
-          'latitude': position.latitude,
-          'longitude': position.longitude,
-        });
-      }
+      await _firestore
+          .collection('users')
+          .doc(_userUid)
+          .collection('DoctorMarkers')
+          .add({
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+      });
     } catch (e) {
       print('Error adding marker to Firestore: $e');
     }
