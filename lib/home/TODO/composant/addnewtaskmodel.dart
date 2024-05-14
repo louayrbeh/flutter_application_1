@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
+// ignore_for_file: prefer_null_aware_operators
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +11,7 @@ import 'package:flutter_application_1/home/TODO/provider/date_time_provider.dart
 import 'package:flutter_application_1/home/TODO/provider/service_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TaskData {
   final TextEditingController titleController;
@@ -29,6 +30,7 @@ class AddNewTaskModel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final User? user = FirebaseAuth.instance.currentUser;
     final dateProv = ref.watch(dateProvider);
     return GestureDetector(
       onTap: () {
@@ -36,7 +38,7 @@ class AddNewTaskModel extends ConsumerWidget {
       },
       child: Container(
         padding: EdgeInsets.all(30),
-        height: MediaQuery.of(context).size.height * 0.7,
+        height: MediaQuery.of(context).size.height * 0.85,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -237,15 +239,19 @@ class AddNewTaskModel extends ConsumerWidget {
                           break;
                       }
 
-                      ref.read(serviceProvider).addNewTask(TodoModel(
-                            category: category,
-                            dateTask: ref.read(dateProvider),
-                            description: taskData.descriptionController.text,
-                            timeTask: ref.read(timeProvider),
-                            titleTask: taskData.titleController.text,
-                            isDone: false,
-                          ));
-                      print("data is saving");
+                      ref.read(serviceProvider).addNewTask(
+                            TodoModel(
+                              category: category,
+                              dateTask: ref.read(dateProvider),
+                              description: taskData.descriptionController.text,
+                              timeTask: ref.read(timeProvider),
+                              titleTask: taskData.titleController.text,
+                              isDone: false,
+                            ),
+                            user != null
+                                ? user.uid
+                                : null, // Ajout de l'ID de l'utilisateur
+                          );
 
                       taskData.titleController.clear();
                       taskData.descriptionController.clear();
