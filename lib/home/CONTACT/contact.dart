@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class Contact extends StatefulWidget {
@@ -16,12 +17,16 @@ class _ContactState extends State<Contact> {
   List<Map<String, dynamic>> _contacts = [];
   TextEditingController _phoneNumberController = TextEditingController();
   TextEditingController _nameController = TextEditingController();
-  late CollectionReference contactCollection;
+  late CollectionReference userCollection;
 
   @override
   void initState() {
     super.initState();
-    contactCollection = FirebaseFirestore.instance.collection('contacts');
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+    userCollection = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('contacts');
     _fetchContacts();
   }
 
@@ -244,7 +249,7 @@ class _ContactState extends State<Contact> {
   }
 
   void _addContact() async {
-    await contactCollection.add({
+    await userCollection.add({
       'name': _nameController.text,
       'phone': _phoneNumberController.text,
     });
@@ -256,13 +261,13 @@ class _ContactState extends State<Contact> {
   void _deleteContact(int index) async {
     String? docId = _contacts[index]['id'];
     if (docId != null) {
-      await contactCollection.doc(docId).delete();
+      await userCollection.doc(docId).delete();
       _fetchContacts();
     }
   }
 
   void _fetchContacts() async {
-    final snapshots = await contactCollection.get();
+    final snapshots = await userCollection.get();
     setState(() {
       _contacts = snapshots.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;

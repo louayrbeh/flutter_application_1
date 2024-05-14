@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -39,6 +40,10 @@ class _PremierMapsState extends State<PremierMaps> {
   Map<PolylineId, Polyline> polylines = {};
   MapType _currentMapType = MapType.normal;
 
+  FirebaseFirestore firestoreCircles = FirebaseFirestore.instance;
+  FirebaseFirestore firestoreMarkers = FirebaseFirestore.instance;
+  User? user = FirebaseAuth.instance.currentUser;
+
   @override
   void initState() {
     super.initState();
@@ -54,11 +59,6 @@ class _PremierMapsState extends State<PremierMaps> {
     final coordinates = await fetchPolylinePoints();
     generatePolyLineFromPoints(coordinates);
   }
-
-  FirebaseFirestore firestoreCircles = FirebaseFirestore.instance;
-  FirebaseFirestore firestoreMarkers = FirebaseFirestore.instance;
-
-  // Méthode pour récupérer les cercles depuis Firestore
 
   @override
   Widget build(BuildContext context) {
@@ -292,7 +292,12 @@ class _PremierMapsState extends State<PremierMaps> {
   }
 
   Future<void> _listenToCirclesChanges() async {
-    firestoreCircles.collection('circles').snapshots().listen((snapshot) {
+    firestoreCircles
+        .collection('users')
+        .doc(user!.uid)
+        .collection('circles')
+        .snapshots()
+        .listen((snapshot) {
       List<Circle> updatedCircles = [];
       snapshot.docs.forEach((doc) {
         if (doc.exists) {
@@ -321,7 +326,12 @@ class _PremierMapsState extends State<PremierMaps> {
   }
 
   Future<void> _listenToMarkerChanges() async {
-    firestoreMarkers.collection('DoctorMarkers').snapshots().listen((snapshot) {
+    firestoreMarkers
+        .collection('users')
+        .doc(user!.uid)
+        .collection('DoctorMarkers')
+        .snapshots()
+        .listen((snapshot) {
       List<Marker> updatedMarkers = [];
       snapshot.docs.forEach((doc) {
         if (doc.exists) {

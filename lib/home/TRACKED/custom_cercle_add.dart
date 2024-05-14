@@ -24,7 +24,6 @@ Future<Object?> customAddCircle(
       );
     },
     pageBuilder: (context, _, __) => ProviderScope(
-      // Ajouter ProviderScope ici
       child: Center(
         child: Container(
           height: MediaQuery.of(context).size.height * 0.80,

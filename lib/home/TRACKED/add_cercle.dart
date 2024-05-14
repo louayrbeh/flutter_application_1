@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importer FirebaseAuth pour obtenir l'UID de l'utilisateur actuel
 
 class AddCircles extends StatefulWidget {
   const AddCircles({Key? key}) : super(key: key);
@@ -101,7 +102,7 @@ class _AddCirclesState extends State<AddCircles> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                "Clic on the map to add circle(s) zone(s). You can also change the raduis of cercle(s)",
+                "Click on the map to add circle(s) zone(s). You can also change the radius of circle(s)",
                 style: TextStyle(color: Colors.black),
               ),
             ),
@@ -171,21 +172,31 @@ class _AddCirclesState extends State<AddCircles> {
   // Fonction pour ajouter un cercle à Firestore
   Future<void> addCircleToFirestore(Circle circle) async {
     try {
-      CollectionReference circlesCollection =
-          FirebaseFirestore.instance.collection('circles');
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Reference to the user's document in Firestore
+        DocumentReference userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-      await circlesCollection.add({
-        'circleId': circle.circleId.toString(),
-        'center': {
-          'latitude': circle.center.latitude,
-          'longitude': circle.center.longitude,
-        },
-        'radius': circle.radius,
-      });
+        // Reference to the circles subcollection within the user's document
+        CollectionReference circlesRef = userDocRef.collection('circles');
 
-      print('Cercle ajouté à Firestore avec succès');
+        // Add the circle to the circles subcollection
+        await circlesRef.add({
+          'circleId': circle.circleId.toString(),
+          'center': {
+            'latitude': circle.center.latitude,
+            'longitude': circle.center.longitude,
+          },
+          'radius': circle.radius,
+        });
+
+        print('Circle added to Firestore successfully');
+      } else {
+        print('User not logged in');
+      }
     } catch (e) {
-      print('Erreur lors de l\'ajout du cercle à Firestore : $e');
+      print('Error adding circle to Firestore: $e');
     }
   }
 
@@ -202,60 +213,79 @@ class _AddCirclesState extends State<AddCircles> {
 
       await circlesCollection.doc(documentId).delete();
 
-      print('Cercle supprimé de Firestore avec succès');
+      print('Circle removed from Firestore successfully');
     } catch (e) {
-      print('Erreur lors de la suppression du cercle de Firestore : $e');
+      print('Error removing circle from Firestore: $e');
     }
   }
 
   // Fonction pour mettre à jour le rayon de tous les cercles dans Firestore
   Future<void> updateAllCircleRadiusInFirestore(double newRadius) async {
     try {
-      CollectionReference circlesCollection =
-          FirebaseFirestore.instance.collection('circles');
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Reference to the user's document in Firestore
+        DocumentReference userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-      QuerySnapshot querySnapshot = await circlesCollection.get();
+        // Reference to the circles subcollection within the user's document
+        CollectionReference circlesRef = userDocRef.collection('circles');
 
-      querySnapshot.docs.forEach((doc) async {
-        await doc.reference.update({'radius': newRadius});
-      });
+        // Update the radius of all circles in the circles subcollection
+        QuerySnapshot querySnapshot = await circlesRef.get();
 
-      print('Rayon de tous les cercles mis à jour avec succès dans Firestore');
+        querySnapshot.docs.forEach((doc) async {
+          await doc.reference.update({'radius': newRadius});
+        });
+
+        print('Radius of all circles updated in Firestore successfully');
+      } else {
+        print('User not logged in');
+      }
     } catch (e) {
-      print(
-          'Erreur lors de la mise à jour du rayon des cercles dans Firestore : $e');
+      print('Error updating circle radius in Firestore: $e');
     }
   }
 
   // Fonction pour récupérer la liste de cercles à partir de Firestore
   Future<List<Circle>> getCirclesFromFirestore() async {
     try {
-      CollectionReference circlesCollection =
-          FirebaseFirestore.instance.collection('circles');
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Reference to the user's document in Firestore
+        DocumentReference userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-      QuerySnapshot querySnapshot = await circlesCollection.get();
+        // Reference to the circles subcollection within the user's document
+        CollectionReference circlesRef = userDocRef.collection('circles');
 
-      List<Circle> circles = [];
+        QuerySnapshot querySnapshot = await circlesRef.get();
 
-      querySnapshot.docs.forEach((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        LatLng center =
-            LatLng(data['center']['latitude'], data['center']['longitude']);
-        double radius = data['radius'] as double;
-        Circle circle = Circle(
-          circleId: CircleId(doc.id),
-          center: center,
-          radius: radius,
-          strokeWidth: 2,
-          strokeColor: Colors.blue,
-          fillColor: Colors.blue.withOpacity(0.2),
-        );
-        circles.add(circle);
-      });
+        List<Circle> circles = [];
 
-      return circles;
+        querySnapshot.docs.forEach((doc) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          LatLng center =
+              LatLng(data['center']['latitude'], data['center']['longitude']);
+          double radius = data['radius'] as double;
+          Circle circle = Circle(
+            circleId: CircleId(doc.id),
+            center: center,
+            radius: radius,
+            strokeWidth: 2,
+            strokeColor: Colors.blue,
+            fillColor: Colors.blue.withOpacity(0.2),
+          );
+          circles.add(circle);
+        });
+
+        return circles;
+      } else {
+        print('User not logged in');
+        return [];
+      }
     } catch (e) {
-      print('Erreur lors de la récupération des cercles depuis Firestore : $e');
+      print('Error getting circles from Firestore: $e');
       return [];
     }
   }
