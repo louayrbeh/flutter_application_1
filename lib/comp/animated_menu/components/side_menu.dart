@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/comp/animated_menu/models/rive_asset.dart';
 import 'package:flutter_application_1/comp/animated_menu/utils/rive_utils.dart';
 import 'package:rive/rive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'info_card.dart';
 import 'side_menu_tile.dart';
 
@@ -22,21 +22,9 @@ class SideMenu extends StatefulWidget {
 class _SideMenuState extends State<SideMenu> {
   RiveAsset selectedMenu = sideMenus.first;
 
-  late String userEmail = '';
-
   @override
   void initState() {
     super.initState();
-    _loadUserEmail();
-  }
-
-  Future<void> _loadUserEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedEmail = prefs.getString('userEmail') ?? '';
-
-    setState(() {
-      userEmail = savedEmail.split('@').first;
-    });
   }
 
   @override
@@ -51,7 +39,7 @@ class _SideMenuState extends State<SideMenu> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InfoCard(
-                name: userEmail,
+                name: "saha walid",
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 24, top: 32, bottom: 16),
@@ -82,7 +70,6 @@ class _SideMenuState extends State<SideMenu> {
                     setState(() {
                       selectedMenu = menu;
                     });
-                    // Naviguer vers le fichier Dart cible
                     Navigator.pushNamed(context, menu.navigateTo);
                   },
                   isActive: selectedMenu == menu,
@@ -120,7 +107,6 @@ class _SideMenuState extends State<SideMenu> {
                     if (menu.onPressedFunction != null) {
                       menu.onPressedFunction!(context);
                     }
-                    // Naviguer vers le fichier Dart cible
 
                     Navigator.pushNamed(context, menu.navigateTo);
 

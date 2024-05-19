@@ -95,7 +95,7 @@ class _EntryPointState extends State<EntryPoint>
             duration: Duration(milliseconds: 200),
             curve: Curves.fastOutSlowIn,
             left: isSideMenuClosed ? 0 : 220,
-            top: 16,
+            top: isSideMenuClosed ? 16 : -20,
             child: MenuBtn(
               riveOnInit: (artboard) {
                 StateMachineController controller = RiveUtils.getRiveController(

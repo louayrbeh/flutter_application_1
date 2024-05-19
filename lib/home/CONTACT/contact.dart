@@ -1,10 +1,11 @@
-// ignore_for_file: prefer_const_constructors, deprecated_member_use, use_super_parameters, prefer_final_fields
+// ignore_for_file: prefer_const_constructors, deprecated_member_use, use_super_parameters, prefer_final_fields, unused_local_variable, avoid_single_cascade_in_expression_statements, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geocoding/geocoding.dart';
 
 class Contact extends StatefulWidget {
   const Contact({Key? key}) : super(key: key);
@@ -117,15 +118,25 @@ class _ContactState extends State<Contact> {
                             onPressed: () =>
                                 _launchUrl('tel:${contact['phone']}'),
                           ),
+                          IconButton(
+                              onPressed: () async {
+                                List<Placemark> placemarks =
+                                    await placemarkFromCoordinates(
+                                        35.77550605971146, 10.826162172109083);
+                                final String Message =
+                                    "${placemarks[0].country} \n ${placemarks[0].administrativeArea} \n ${placemarks[0].locality} \n ${placemarks[0].street} \n ${placemarks[0].postalCode}    ";
+                                _launchSms(contact['phone'], Message);
+                              },
+                              icon: Icon(Icons.message)),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 1),
+                            padding: EdgeInsets.symmetric(horizontal: 5),
                             child: VerticalDivider(
                               thickness: 2,
                               color: Colors.grey,
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete),
+                            icon: Icon(Icons.delete_rounded),
                             onPressed: () {
                               _deleteContact(index);
                             },
@@ -148,6 +159,17 @@ class _ContactState extends State<Contact> {
       await launch(url);
     } else {
       throw 'Impossible de lancer $url';
+    }
+  }
+
+  _launchSms(String phoneNumber, String message) async {
+    String encodedMessage = Uri.encodeComponent(message);
+    String encodedPhoneNumber = Uri.encodeComponent(phoneNumber);
+    String url = 'sms:$encodedPhoneNumber?body=$encodedMessage';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Impossible d\'envoyer un message au numéro $phoneNumber';
     }
   }
 

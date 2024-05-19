@@ -40,8 +40,6 @@ class _DoctorMapState extends State<DoctorMap> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // L'application est revenue en premier plan
-      // Recharger les marqueurs depuis Firestore
       getMarkersFromFirestore();
     }
   }

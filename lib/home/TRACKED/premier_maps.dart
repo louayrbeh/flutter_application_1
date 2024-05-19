@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls, prefer_const_constructors
-
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -22,15 +22,16 @@ class PremierMaps extends StatefulWidget {
 class _PremierMapsState extends State<PremierMaps> {
   bool isAddDoctorDialogShown = false;
   bool isAddCircleZoneDialogShown = false;
+  final databaseReference = FirebaseDatabase.instance.ref();
+  Map<dynamic, dynamic> gpsData = {};
+  double latitude = 0.0;
+  double longitude = 0.0;
+  Set<Marker> bracletmarkers = {};
 
   double circleRadius = 100.0;
   List<Circle> circles = [];
   List<Marker> markers = [];
-
-  static final CameraPosition bracletCameraPosition = CameraPosition(
-    target: LatLng(35.77550605971146, 10.826162172109083),
-    zoom: 14.4746,
-  );
+  GoogleMapController? _controller;
 
   final locationController = Location();
   LatLng? currentPosition;
@@ -49,9 +50,35 @@ class _PremierMapsState extends State<PremierMaps> {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
       await fetchLocationUpdates();
-      initializeMap();
       _listenToCirclesChanges(); // Écouter les changements dans la collection circles Firestore
       _listenToMarkerChanges(); // Écouter les changements dans la collection doctormarker Firestore
+    });
+    readData();
+  }
+
+  void readData() {
+    databaseReference.child("gpsData").onValue.listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>;
+      setState(() {
+        gpsData = data;
+        latitude = gpsData["Latitude"];
+        longitude = gpsData["Longuitude"];
+        updateBracletMarkers(); // Met à jour les marqueurs sur la carte
+        _animateToLocation(); // Anime la caméra à la nouvelle position
+      });
+    });
+  }
+
+  void updateBracletMarkers() {
+    setState(() {
+      bracletmarkers = {
+        Marker(
+          markerId: MarkerId('location'),
+          position: LatLng(latitude, longitude),
+        ),
+      };
+      print(latitude);
+      print(longitude);
     });
   }
 
@@ -80,9 +107,16 @@ class _PremierMapsState extends State<PremierMaps> {
                     scrollGesturesEnabled: true,
                     zoomGesturesEnabled: true,
                     rotateGesturesEnabled: true,
-                    initialCameraPosition: bracletCameraPosition,
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(latitude, longitude),
+                      zoom: 15,
+                    ),
                     circles: Set<Circle>.of(circles),
-                    markers: Set<Marker>.of(markers),
+                    markers: Set<Marker>.of([...markers, ...bracletmarkers]),
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller = controller;
+                      _animateToLocation();
+                    },
                   ),
                 ),
                 Positioned(
@@ -247,6 +281,7 @@ class _PremierMapsState extends State<PremierMaps> {
             target: currentPosition!,
             zoom: 14.0, // Zoom par défaut
           );
+          _animateToLocation();
         });
         print("Position actuelle : $currentPosition");
       }
@@ -263,7 +298,7 @@ class _PremierMapsState extends State<PremierMaps> {
     final result = await polylinePoints.getRouteBetweenCoordinates(
       "AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao",
       PointLatLng(currentPosition!.latitude, currentPosition!.longitude),
-      //coordonne de braclet
+      // coordonne de braclet
       PointLatLng(35.77550605971146, 10.826162172109083),
     );
 
@@ -354,5 +389,18 @@ class _PremierMapsState extends State<PremierMaps> {
         markers = updatedMarkers;
       });
     });
+  }
+
+  void _animateToLocation() {
+    if (_controller != null && latitude != 0.0 && longitude != 0.0) {
+      _controller!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(latitude, longitude),
+            zoom: 15,
+          ),
+        ),
+      );
+    }
   }
 }

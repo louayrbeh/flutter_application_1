@@ -43,7 +43,6 @@ class _MyAppState extends State<MyApp> {
         print('User is currently signed out!');
       } else {
         print('User is signed in!');
-        // Ajouter un document pour le nouvel utilisateur
         addUserDocument(user);
       }
     });
@@ -61,7 +60,8 @@ class _MyAppState extends State<MyApp> {
     if (!userDoc.exists) {
       await users.doc(user.uid).set({
         'email': user.email,
-        // Ajoutez d'autres champs de données de votre choix
+        'name': '',
+        'icon': 'assets/avaters/Avatar Default.jpg',
       });
       print('Document utilisateur ajouté avec succès pour ${user.uid}');
     } else {
