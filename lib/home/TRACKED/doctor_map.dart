@@ -23,7 +23,7 @@ class _DoctorMapState extends State<DoctorMap> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _userUid = FirebaseAuth.instance.currentUser!.uid;
-    // Appeler la fonction pour récupérer les marqueurs depuis Firestore lors de l'initialisation
+
     getMarkersFromFirestore();
     // Observer pour détecter les changements d'état de l'application
     WidgetsBinding.instance!.addObserver(this);
@@ -52,7 +52,7 @@ class _DoctorMapState extends State<DoctorMap> with WidgetsBindingObserver {
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 0),
-        height: MediaQuery.of(context).size.height * 0.63,
+        height: MediaQuery.of(context).size.height * 0.60,
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(16),

@@ -179,7 +179,7 @@ class _SignInFormState extends State<SignInForm> {
               } catch (e) {
                 AwesomeDialog(
                   context: context,
-                  dialogType: DialogType.warning,
+                  dialogType: DialogType.error,
                   animType: AnimType.rightSlide,
                   title: 'error',
                   desc: 'Check your email then retry!',

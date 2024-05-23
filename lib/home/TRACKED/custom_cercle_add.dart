@@ -31,6 +31,10 @@ Future<Object?> customAddCircle(
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.94),
             borderRadius: const BorderRadius.all(Radius.circular(40)),
+            border: Border.all(
+              color: Colors.black, // Couleur de la bordure
+              width: 3, // Épaisseur de la bordure en pixels
+            ),
           ),
           child: Scaffold(
             backgroundColor: Colors.transparent,

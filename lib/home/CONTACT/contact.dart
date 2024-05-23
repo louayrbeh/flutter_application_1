@@ -36,10 +36,13 @@ class _ContactState extends State<Contact> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "contact",
+          "Contact",
           style: TextStyle(fontFamily: "Poppins"),
         ),
         centerTitle: true,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
       ),
       body: Column(
         children: [
@@ -64,7 +67,7 @@ class _ContactState extends State<Contact> {
                   );
                 },
                 child: Text(
-                  "Add Phone Number",
+                  "Add Contact",
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 14,
@@ -94,7 +97,10 @@ class _ContactState extends State<Contact> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.person_2_rounded),
+                          Icon(
+                            Icons.person,
+                            size: 30,
+                          ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 5),
                             child: VerticalDivider(
@@ -114,7 +120,10 @@ class _ContactState extends State<Contact> {
                       Row(
                         children: [
                           IconButton(
-                            icon: Icon(Icons.phone),
+                            icon: Icon(
+                              Icons.phone,
+                              size: 25,
+                            ),
                             onPressed: () =>
                                 _launchUrl('tel:${contact['phone']}'),
                           ),
@@ -127,7 +136,10 @@ class _ContactState extends State<Contact> {
                                     "${placemarks[0].country} \n ${placemarks[0].administrativeArea} \n ${placemarks[0].locality} \n ${placemarks[0].street} \n ${placemarks[0].postalCode}    ";
                                 _launchSms(contact['phone'], Message);
                               },
-                              icon: Icon(Icons.message)),
+                              icon: Icon(
+                                Icons.message,
+                                size: 25,
+                              )),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 5),
                             child: VerticalDivider(
@@ -136,7 +148,10 @@ class _ContactState extends State<Contact> {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete_rounded),
+                            icon: Icon(
+                              Icons.delete_rounded,
+                              size: 30,
+                            ),
                             onPressed: () {
                               _deleteContact(index);
                             },
@@ -179,7 +194,7 @@ class _ContactState extends State<Contact> {
   }) {
     return showGeneralDialog(
       barrierDismissible: true,
-      barrierLabel: "Add Phone Number",
+      barrierLabel: "Add Contact",
       context: context,
       transitionDuration: const Duration(milliseconds: 400),
       transitionBuilder: (_, animation, __, child) {
@@ -196,11 +211,17 @@ class _ContactState extends State<Contact> {
         child: Center(
           child: Container(
             width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.50,
+            height: MediaQuery.of(context).size.height * 0.40,
             padding: const EdgeInsets.symmetric(vertical: 20),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.94),
-              borderRadius: const BorderRadius.all(Radius.circular(40)),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(40),
+              ),
+              border: Border.all(
+                color: Colors.black, // Couleur de la bordure
+                width: 3, // Épaisseur de la bordure en pixels
+              ),
             ),
             child: Scaffold(
               backgroundColor: Colors.transparent,
@@ -209,24 +230,59 @@ class _ContactState extends State<Contact> {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
                     children: [
-                      const Text(
-                        " Add Phone Number",
-                        style: TextStyle(fontSize: 34, fontFamily: "Poppins"),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.close,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const Text(
+                            " AddContact",
+                            style:
+                                TextStyle(fontSize: 28, fontFamily: "Poppins"),
+                          ),
+                        ],
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 8,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 125),
+                        child: Text(
+                          "Contact name :",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                       TextField(
                         controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: 'Name',
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 120),
+                        child: Text(
+                          "Phone number :",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                       TextField(
                         controller: _phoneNumberController,
-                        decoration: InputDecoration(
-                          labelText: 'Phone number',
-                        ),
                         keyboardType: TextInputType.phone,
                       ),
                       SizedBox(
@@ -235,6 +291,7 @@ class _ContactState extends State<Contact> {
                       Center(
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.80,
+                          height: 40,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
@@ -248,7 +305,7 @@ class _ContactState extends State<Contact> {
                               Navigator.of(context).pop();
                             },
                             child: Text(
-                              "Add Phone Number",
+                              "Add To Contacts",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 14,

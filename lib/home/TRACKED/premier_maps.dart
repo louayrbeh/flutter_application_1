@@ -299,7 +299,7 @@ class _PremierMapsState extends State<PremierMaps> {
       "AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao",
       PointLatLng(currentPosition!.latitude, currentPosition!.longitude),
       // coordonne de braclet
-      PointLatLng(35.77550605971146, 10.826162172109083),
+      PointLatLng(latitude, longitude),
     );
 
     if (result.points.isNotEmpty) {

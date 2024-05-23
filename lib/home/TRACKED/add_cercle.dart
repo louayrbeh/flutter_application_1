@@ -53,7 +53,7 @@ class _AddCirclesState extends State<AddCircles> {
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 0),
-        height: MediaQuery.of(context).size.height * 0.63,
+        height: MediaQuery.of(context).size.height * 0.60,
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(16),
@@ -101,29 +101,30 @@ class _AddCirclesState extends State<AddCircles> {
               height: 8,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.only(left: 8, right: 8),
               child: Text(
-                "Click on the map to add circle(s) zone(s). You can also change the radius of circle(s)",
+                "Click on the map to add circle(s) zone(s).\nYou can also change the radius of circles (default radius 100 metre)",
                 style: TextStyle(color: Colors.black),
               ),
             ),
             SizedBox(
               height: 8,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  height: 40,
-                  child: Center(
+            Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.60,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    height: 40,
                     child: TextField(
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        hintText: "Enter raduis (metre) ",
+                        hintText: "Add raduis value in metre",
                       ),
                       onChanged: (value) {
                         setState(() {
@@ -132,37 +133,37 @@ class _AddCirclesState extends State<AddCircles> {
                       },
                     ),
                   ),
-                ),
-                SizedBox(width: 8.0),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.30,
-                  height: 40,
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
+                  SizedBox(width: 8.0),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.30,
+                    height: 40,
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          backgroundColor: Colors.white,
+                          foregroundColor: Color(0xFF80A4FF),
                         ),
-                        backgroundColor: Colors.white,
-                        foregroundColor: Color(0xFF80A4FF),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          circles.forEach((circle) {
-                            circles[circles.indexOf(circle)] =
-                                circle.copyWith(radiusParam: circleRadius);
+                        onPressed: () {
+                          setState(() {
+                            circles.forEach((circle) {
+                              circles[circles.indexOf(circle)] =
+                                  circle.copyWith(radiusParam: circleRadius);
+                            });
+                            updateAllCircleRadiusInFirestore(circleRadius);
                           });
-                          updateAllCircleRadiusInFirestore(circleRadius);
-                        });
-                      },
-                      child: Text(
-                        "Apply",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700),
-                      )),
-                ),
-              ],
+                        },
+                        child: Text(
+                          "Apply",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700),
+                        )),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

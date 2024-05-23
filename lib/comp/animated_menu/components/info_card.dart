@@ -1,56 +1,95 @@
-// ignore_for_file: prefer_const_constructors, use_super_parameters, unused_local_variable, sized_box_for_whitespace, non_constant_identifier_names, unnecessary_brace_in_string_interps, avoid_print
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+Stream<DocumentSnapshot> getUserDataStream() {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
+
+  return users.doc(userId).snapshots();
+}
+
 class InfoCard extends StatelessWidget {
   const InfoCard({
     Key? key,
-    required this.name,
   }) : super(key: key);
-
-  final String name;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20),
-      child: ListTile(
-        leading: const CircleAvatar(
-          backgroundColor: Colors.white24,
-          child: Icon(
-            CupertinoIcons.person,
-            color: Colors.white,
-          ),
-        ),
-        title: Text(
-          'UserName',
-          style: const TextStyle(color: Colors.white),
-        ),
-        subtitle: Text(
-          name,
-          style: const TextStyle(color: Colors.white),
-        ),
-        trailing: CircleAvatar(
-          backgroundColor: Colors.white24,
-          child: IconButton(
-            onPressed: () {
-              customEditProfil(
-                context,
-                onClosed: (_) {},
-              );
-            },
-            icon: Icon(
-              Icons.edit,
-              color: Colors.white,
+    return StreamBuilder<DocumentSnapshot>(
+      stream: getUserDataStream(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData || !snapshot.data!.exists) {
+          return Text('No user data found');
+        } else {
+          final userData = snapshot.data!.data() as Map<String, dynamic>;
+          final userName = userData['name'] ?? 'UserName';
+          final userIcon =
+              userData['icon'] ?? 'assets/avaters/Avatar Default.png';
+          final userEmail = userData['email'] ?? 'email@email.com';
+
+          return Padding(
+            padding: const EdgeInsets.only(top: 50),
+            child: ListTile(
+              leading: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white24,
+                    width: 1,
+                  ),
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    userIcon,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              title: Text(
+                userName,
+                style: const TextStyle(color: Colors.white),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Text(
+                userEmail, // You can update this to show something dynamic if needed
+                style: const TextStyle(color: Colors.white), maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: Padding(
+                padding: const EdgeInsets.only(right: 30),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white24,
+                  child: IconButton(
+                    iconSize: 30,
+                    onPressed: () {
+                      customEditProfil(
+                        context,
+                        onClosed: (_) {},
+                      );
+                    },
+                    icon: Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
+          );
+        }
+      },
     );
   }
 }
@@ -64,7 +103,7 @@ Future<Object?> customEditProfil(
   TextEditingController editname = TextEditingController();
   return showGeneralDialog(
     barrierDismissible: true,
-    barrierLabel: "Add Phone Number",
+    barrierLabel: "Edit profil",
     context: context,
     transitionDuration: const Duration(milliseconds: 400),
     transitionBuilder: (_, animation, __, child) {
@@ -81,11 +120,17 @@ Future<Object?> customEditProfil(
       child: Center(
         child: Container(
           width: MediaQuery.of(context).size.width * 0.8,
-          height: MediaQuery.of(context).size.height * 0.6,
+          height: MediaQuery.of(context).size.height * 0.50,
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.94),
-            borderRadius: const BorderRadius.all(Radius.circular(40)),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(40),
+            ),
+            border: Border.all(
+              color: Colors.black, // Couleur de la bordure
+              width: 3, // Épaisseur de la bordure en pixels
+            ),
           ),
           child: Scaffold(
             backgroundColor: Colors.transparent,
@@ -94,187 +139,71 @@ Future<Object?> customEditProfil(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
                   children: [
-                    const Text(
-                      " Edit Profil",
-                      style: TextStyle(fontSize: 34, fontFamily: "Poppins"),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: CircleAvatar(
+                            radius: 16,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              Icons.close,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const Text(
+                          " Edit Profil",
+                          style: TextStyle(fontSize: 28, fontFamily: "Poppins"),
+                        ),
+                      ],
                     ),
                     SizedBox(
-                      height: 10,
+                      height: 8,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 105),
+                      child: Text(
+                        "Edit your user name :",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
                     ),
                     TextField(
                       controller: editname,
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                      ),
                     ),
                     SizedBox(
-                      height: 6,
+                      height: 8,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 6),
-                      child: Text("choisir un avatar"),
+                      padding: const EdgeInsets.only(right: 33),
+                      child: Text(
+                        "Choose avatar for your profil :",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
                     ),
                     SizedBox(
-                      height: 6,
+                      height: 8,
                     ),
-                    SizedBox(height: 20),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/6.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/6.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/7.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/7.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/8.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/8.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/9.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/9.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/10.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/10.png';
-                            },
-                          ),
-                        ],
+                    Container(
+                      height: 120,
+                      child: ImageGridScreen(
+                        onIconSelected: (path) {
+                          selectedIconPath = path;
+                        },
                       ),
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/1.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/1.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/2.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/2.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/3.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/3.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/4.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/4.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/5.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/5.png';
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/11.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/11.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/12.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/12.png';
-                            },
-                          ),
-                          GestureDetector(
-                            child: Container(
-                                width: 55,
-                                height: 55,
-                                child: Image.asset('assets/avaters/13.png')),
-                            onTap: () {
-                              selectedIconPath = 'assets/avaters/13.png';
-                            },
-                          ),
-                          Container(
-                            width: 55,
-                            height: 55,
-                            child: GestureDetector(
-                              child: Container(
-                                width: 45,
-                                height: 45,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(50),
-                                  child: Image.asset(
-                                      'assets/avaters/Avatar Default.jpg'),
-                                ),
-                              ),
-                              onTap: () {
-                                selectedIconPath =
-                                    'assets/avaters/Avatar Default.jpg';
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    SizedBox(height: 8),
                     Center(
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.80,
@@ -286,8 +215,16 @@ Future<Object?> customEditProfil(
                             backgroundColor: Colors.white,
                             foregroundColor: Color(0xFF80A4FF),
                           ),
-                          onPressed: () {
-                            //   EditUserDocument(editname, selectedIconPath);
+                          onPressed: () async {
+                            if (editname.text.isNotEmpty &&
+                                selectedIconPath != null) {
+                              await EditUserDocument(
+                                  editname.text, selectedIconPath);
+                              Navigator.pop(context);
+                              onClosed(null);
+                            } else {
+                              print('Name or icon not selected');
+                            }
                           },
                           child: Text(
                             "Edit",
@@ -310,21 +247,90 @@ Future<Object?> customEditProfil(
     ),
   ).then(onClosed);
 }
-/*
-EditUserDocument(editname, selectedIconPath) async {
+
+class ImageGridScreen extends StatefulWidget {
+  final ValueChanged<String> onIconSelected;
+
+  ImageGridScreen({required this.onIconSelected});
+
+  @override
+  _ImageGridScreenState createState() => _ImageGridScreenState();
+}
+
+class _ImageGridScreenState extends State<ImageGridScreen> {
+  List<String> imagePaths = [
+    'assets/avaters/1.png',
+    'assets/avaters/2.png',
+    'assets/avaters/3.png',
+    'assets/avaters/4.png',
+    'assets/avaters/5.png',
+    'assets/avaters/6.png',
+    'assets/avaters/7.png',
+    'assets/avaters/8.png',
+    'assets/avaters/9.png',
+    'assets/avaters/10.png',
+  ];
+
+  String selectedIconPath = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      padding: EdgeInsets.all(8.0),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 5,
+        mainAxisSpacing: 3.0,
+        crossAxisSpacing: 3.0,
+      ),
+      itemCount: imagePaths.length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedIconPath = imagePaths[index];
+            });
+            widget.onIconSelected(selectedIconPath);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: selectedIconPath == imagePaths[index]
+                    ? Color(0xFF80A4FF)
+                    : Colors.transparent,
+                width: 3,
+              ),
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                imagePaths[index],
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+Future<void> EditUserDocument(String name, String? selectedIconPath) async {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   final String userId = FirebaseAuth.instance.currentUser!.uid;
-  // Vérifier si un document existe déjà pour cet utilisateur
-  DocumentSnapshot userDoc = await users.doc(userId).get();
 
-  // Si aucun document n'existe, ajouter un nouveau document pour cet utilisateur
-  if (!userDoc.exists) {
-    await users.doc(userId).update({
-      'name': editname,
-      'icon': selectedIconPath,
-    });
-    print('modification ajouté avec succès pour ${userId}');
-  } else {
-    print('ereeeur modification.');
+  if (selectedIconPath == null) {
+    return;
   }
-}*/
+
+  try {
+    await users.doc(userId).set({
+      'name': name,
+      'icon': selectedIconPath,
+    }, SetOptions(merge: true));
+    print('Modification added successfully for $userId');
+  } catch (e) {
+    print('Error updating document: $e');
+  }
+}

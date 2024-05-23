@@ -29,7 +29,7 @@ class Todo extends ConsumerWidget {
           style: TextStyle(fontFamily: "Poppins"),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white70,
         foregroundColor: Colors.black,
         elevation: 0,
       ),

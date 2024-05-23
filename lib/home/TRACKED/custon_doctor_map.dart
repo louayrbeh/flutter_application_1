@@ -30,6 +30,10 @@ Future<Object?> customAddDoctor(
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.94),
           borderRadius: const BorderRadius.all(Radius.circular(40)),
+          border: Border.all(
+            color: Colors.black,
+            width: 3,
+          ),
         ),
         child: Scaffold(
           backgroundColor: Colors.transparent,
@@ -43,9 +47,22 @@ Future<Object?> customAddDoctor(
                     style: TextStyle(fontSize: 34, fontFamily: "Poppins"),
                   ),
                   DoctorMap(),
-                  Text(
-                    "Clic on the map to add doctor(s) location(s)",
-                    style: TextStyle(color: Colors.black),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: Text(
+                      "Clic on the map to add doctor(s) location(s).",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: Text(
+                      "(To remove marker from the map clicks on him.)",
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
                 ],
               ),

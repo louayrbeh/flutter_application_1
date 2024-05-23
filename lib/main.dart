@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          scaffoldBackgroundColor: const Color(0xFFEEF1F8),
+          scaffoldBackgroundColor: Color.fromARGB(255, 248, 247, 247),
           primarySwatch: Colors.blue,
           fontFamily: "Intel",
           inputDecorationTheme: const InputDecorationTheme(
@@ -106,8 +106,7 @@ class _MyAppState extends State<MyApp> {
           'todo': (context) => Todo(),
           'contact': (context) => Contact(),
           'community': (context) => const Community(),
-          'help': (context) => const Help(),
-          'todo': (context) => Todo(),
+          'help': (context) => ImageGridScreen(),
         },
       ),
     );

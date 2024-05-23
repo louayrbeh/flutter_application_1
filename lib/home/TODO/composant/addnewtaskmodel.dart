@@ -38,10 +38,14 @@ class AddNewTaskModel extends ConsumerWidget {
       },
       child: Container(
         padding: EdgeInsets.all(30),
-        height: MediaQuery.of(context).size.height * 0.85,
+        height: MediaQuery.of(context).size.height * 0.70,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.black, // Couleur de la bordure
+            width: 3, // Épaisseur de la bordure en pixels
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -52,10 +56,10 @@ class AddNewTaskModel extends ConsumerWidget {
                 'New Task Todo',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontFamily: "Poppins"),
               ),
             ),
             Divider(
