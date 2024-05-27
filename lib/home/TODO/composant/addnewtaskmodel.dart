@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_null_aware_operators
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/home/TODO/composant/date_time_widget.dart';
@@ -9,6 +7,7 @@ import 'package:flutter_application_1/home/TODO/model/todo_model.dart';
 import 'package:flutter_application_1/home/TODO/provider/radio_provider.dart';
 import 'package:flutter_application_1/home/TODO/provider/date_time_provider.dart';
 import 'package:flutter_application_1/home/TODO/provider/service_provider.dart';
+import 'package:flutter_application_1/notification/local_notification_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,13 +22,21 @@ class TaskData {
   });
 }
 
-class AddNewTaskModel extends ConsumerWidget {
+class AddNewTaskModel extends ConsumerStatefulWidget {
   final TaskData taskData;
 
   const AddNewTaskModel({Key? key, required this.taskData}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _AddNewTaskModelState createState() => _AddNewTaskModelState();
+}
+
+class _AddNewTaskModelState extends ConsumerState<AddNewTaskModel> {
+  DateTime? pickedDate;
+  TimeOfDay? pickedTime;
+
+  @override
+  Widget build(BuildContext context) {
     final User? user = FirebaseAuth.instance.currentUser;
     final dateProv = ref.watch(dateProvider);
     return GestureDetector(
@@ -83,7 +90,7 @@ class AddNewTaskModel extends ConsumerWidget {
             Textfieldform(
               maxLine: 1,
               hintText: "Add Task Name",
-              txtController: taskData.titleController,
+              txtController: widget.taskData.titleController,
             ),
             SizedBox(height: 6),
             Padding(
@@ -104,7 +111,7 @@ class AddNewTaskModel extends ConsumerWidget {
             Textfieldform(
               maxLine: 3,
               hintText: "Add Description",
-              txtController: taskData.descriptionController,
+              txtController: widget.taskData.descriptionController,
             ),
             SizedBox(height: 10),
             Padding(
@@ -165,6 +172,9 @@ class AddNewTaskModel extends ConsumerWidget {
                       lastDate: DateTime(2025),
                     );
                     if (getValue != null) {
+                      setState(() {
+                        pickedDate = getValue;
+                      });
                       final format = DateFormat.yMd();
                       ref
                           .read(dateProvider.notifier)
@@ -183,6 +193,9 @@ class AddNewTaskModel extends ConsumerWidget {
                       initialTime: TimeOfDay.now(),
                     );
                     if (getTime != null) {
+                      setState(() {
+                        pickedTime = getTime;
+                      });
                       ref
                           .read(timeProvider.notifier)
                           .update((state) => getTime.format(context));
@@ -247,18 +260,27 @@ class AddNewTaskModel extends ConsumerWidget {
                             TodoModel(
                               category: category,
                               dateTask: ref.read(dateProvider),
-                              description: taskData.descriptionController.text,
+                              description:
+                                  widget.taskData.descriptionController.text,
                               timeTask: ref.read(timeProvider),
-                              titleTask: taskData.titleController.text,
+                              titleTask: widget.taskData.titleController.text,
                               isDone: false,
                             ),
                             user != null
                                 ? user.uid
                                 : null, // Ajout de l'ID de l'utilisateur
                           );
+                      print(pickedDate);
+                      print(pickedTime);
+                      if (pickedDate != null && pickedTime != null) {
+                        LocalNotificationService.showScheduledNotification(
+                          currentDate: pickedDate!,
+                          scheduledTime: pickedTime!,
+                        );
+                      }
 
-                      taskData.titleController.clear();
-                      taskData.descriptionController.clear();
+                      widget.taskData.titleController.clear();
+                      widget.taskData.descriptionController.clear();
                       ref.read(radioProvider.notifier).update((state) => 0);
                       Navigator.pop(context);
                     },

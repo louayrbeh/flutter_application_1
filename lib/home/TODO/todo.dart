@@ -46,7 +46,6 @@ class Todo extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Utilisation de DateFormat pour obtenir le nom du jour suivi de la date
                       Text(
                         DateFormat('EEEE ,').format(DateTime.now()),
                         style: TextStyle(

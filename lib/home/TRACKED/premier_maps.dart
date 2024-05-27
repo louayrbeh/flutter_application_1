@@ -297,6 +297,7 @@ class _PremierMapsState extends State<PremierMaps> {
 
     final result = await polylinePoints.getRouteBetweenCoordinates(
       "AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao",
+      // coordonne de utilisateur
       PointLatLng(currentPosition!.latitude, currentPosition!.longitude),
       // coordonne de braclet
       PointLatLng(latitude, longitude),
