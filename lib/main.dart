@@ -14,6 +14,7 @@ import 'package:flutter_application_1/home/CONTACT/contact.dart';
 
 import 'package:flutter_application_1/home/HOME/home.dart';
 import 'package:flutter_application_1/home/TODO/todo.dart';
+
 import 'package:flutter_application_1/home/TRACKED/tracked.dart';
 import 'package:flutter_application_1/notification/local_notification_service.dart';
 import 'package:flutter_application_1/notification/test.dart';
@@ -27,6 +28,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   Future.wait([
     LocalNotificationService.init(),
     WorkManagerService().init(),
@@ -52,7 +54,7 @@ class _MyAppState extends State<MyApp> {
       } else {
         print('User is signed in!');
         addUserDocument(user);
-        //addAppToken(user);
+        addAppToken(user);
       }
     });
   }
@@ -60,7 +62,8 @@ class _MyAppState extends State<MyApp> {
   // Fonction pour ajouter un document utilisateur à Firestore
   Future<void> addUserDocument(User user) async {
     // Référence à la collection "users" dans Firestore
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
+   if ( user != null) {
+     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
     // Vérifier si un document existe déjà pour cet utilisateur
     DocumentSnapshot userDoc = await users.doc(user.uid).get();
@@ -77,11 +80,13 @@ class _MyAppState extends State<MyApp> {
       print('Le document utilisateur pour ${user.uid} existe déjà.');
     }
   }
+   }
+   
 
-/*
   // Fonction pour ajouter un document utilisateur à Firestore
   Future<void> addAppToken(User user) async {
-    CollectionReference TokenCollection = FirebaseFirestore.instance
+    if ( user != null) {
+      CollectionReference TokenCollection = FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
         .collection('token');
@@ -94,7 +99,8 @@ class _MyAppState extends State<MyApp> {
       "token": mytoken,
     });
   }
-*/
+    }
+
   @override
   Widget build(BuildContext context) {
     return ProviderScope(

@@ -77,7 +77,7 @@ class _SideMenuState extends State<SideMenu> {
                 padding: const EdgeInsets.only(left: 24, top: 32, bottom: 16),
                 child: Center(
                   child: Text(
-                    "History".toUpperCase(),
+                    "Setting".toUpperCase(),
                     style: Theme.of(context)
                         .textTheme
                         .titleMedium!

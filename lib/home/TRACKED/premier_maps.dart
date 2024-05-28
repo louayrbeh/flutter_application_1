@@ -1,16 +1,18 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls, prefer_const_constructors
 import 'dart:async';
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_application_1/notification/local_notification_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:flutter_application_1/home/TRACKED/custom_cercle_add.dart';
 import 'package:flutter_application_1/home/TRACKED/custon_doctor_map.dart';
+import 'package:http/http.dart' as http;
 
 class PremierMaps extends StatefulWidget {
   const PremierMaps({Key? key}) : super(key: key);
@@ -50,9 +52,10 @@ class _PremierMapsState extends State<PremierMaps> {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
       await fetchLocationUpdates();
-      _listenToCirclesChanges(); // Écouter les changements dans la collection circles Firestore
-      _listenToMarkerChanges(); // Écouter les changements dans la collection doctormarker Firestore
+      _listenToCirclesChanges();
+      _listenToMarkerChanges();
     });
+
     readData();
   }
 
@@ -63,10 +66,70 @@ class _PremierMapsState extends State<PremierMaps> {
         gpsData = data;
         latitude = gpsData["Latitude"];
         longitude = gpsData["Longuitude"];
-        updateBracletMarkers(); // Met à jour les marqueurs sur la carte
-        _animateToLocation(); // Anime la caméra à la nouvelle position
+        updateBracletMarkers();
+        _animateToLocation();
+
+        LatLng braceletPosition = LatLng(latitude, longitude);
+        if (isBraceletOutsideCircles(braceletPosition, circles)) {
+          LocalNotificationService.showNotification(
+              "Alerte", "Le bracelet est en dehors de la zone désignée !");
+        }
       });
     });
+  }
+
+  bool isBraceletOutsideCircles(LatLng braceletPosition, List<Circle> circles) {
+    for (Circle circle in circles) {
+      final double distance = Geolocator.distanceBetween(
+        braceletPosition.latitude,
+        braceletPosition.longitude,
+        circle.center.latitude,
+        circle.center.longitude,
+      );
+      if (distance <= circle.radius) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void checkBraceletLocation(
+      LatLng braceletPosition, List<Circle> securityZones) {
+    if (isBraceletOutsideCircles(braceletPosition, securityZones)) {
+      sendNotificationToUser();
+    }
+  }
+
+  void sendNotificationToUser() async {
+    var headersList = {
+      'Accept': '*/*',
+      'Content-Type': 'application/json',
+      'Authorization':
+          'key=AAAADi4Xxd4:APA91bH0J_DcRHPml1s4UuUUTgJQ39DifY-dONW5IqnSfAU67fdScDDVlxI7a-djkEtV4b5aJ3R2gJAhDNGqINPdCQL8iOSM9NX4eGEYVmqPHiHzRPL5nzr2UiKC_O4nd5zG6_vkisbQ'
+    };
+    var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+
+    var body = {
+      "to":
+          "dQHy8iY4SqqkC0i7MCQwam:APA91bE-B3eSGqXZn8OnFSaxYQp4dYBlzP_pnUZLqJCMF3enEfqu_9J6GFeIJSkUIa0xzyB6g9kXSy5TrPMsaI7p1gSoMWKiR-C5LTqHFhJl9XPHYOztCqyLUylK48Dlro857pZM8dGi",
+      "notification": {
+        "title": "Alert !!",
+        "body": "The bracelet is outside the designated zone!",
+      }
+    };
+
+    var req = http.Request('POST', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      print(resBody);
+    } else {
+      print(res.reasonPhrase);
+    }
   }
 
   void updateBracletMarkers() {
@@ -77,6 +140,7 @@ class _PremierMapsState extends State<PremierMaps> {
           position: LatLng(latitude, longitude),
         ),
       };
+      print("===============================================");
       print(latitude);
       print(longitude);
     });
@@ -109,7 +173,7 @@ class _PremierMapsState extends State<PremierMaps> {
                     rotateGesturesEnabled: true,
                     initialCameraPosition: CameraPosition(
                       target: LatLng(latitude, longitude),
-                      zoom: 15,
+                      zoom: 14,
                     ),
                     circles: Set<Circle>.of(circles),
                     markers: Set<Marker>.of([...markers, ...bracletmarkers]),
@@ -398,7 +462,7 @@ class _PremierMapsState extends State<PremierMaps> {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(latitude, longitude),
-            zoom: 15,
+            zoom: 14,
           ),
         ),
       );

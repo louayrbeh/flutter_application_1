@@ -63,6 +63,7 @@ dependencies:
   timezone: ^0.9.3
   workmanager: ^0.5.2
   flutter_timezone: ^1.0.8
+  http: ^1.2.1
 
 dependency_overrides:
   rive: ^0.12.4
@@ -97,6 +98,7 @@ flutter:
     - assets/Backgrounds/
     - assets/icons/
     - assets/RiveAssets/
+    - assets/logo/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

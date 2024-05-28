@@ -10,6 +10,7 @@
 analyzer:
   errors:
     no_leading_underscores_for_local_identifiers: ignore
+    unnecessary_cast: ignore ignore ignore
     unused_element: ignore
     unused_local_variable: ignore
 include: packag ignoree:flutter_lints/flutter.yaml

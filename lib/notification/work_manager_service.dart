@@ -1,3 +1,4 @@
+import 'package:flutter_application_1/home/TRACKED/premier_maps.dart';
 import 'package:flutter_application_1/notification/local_notification_service.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -27,6 +28,7 @@ void actionTask() {
   // show notification
   Workmanager().executeTask((taskName, inputData) {
     LocalNotificationService.showDailyScheduledNotification();
+
     return Future.value(true);
   });
 }
